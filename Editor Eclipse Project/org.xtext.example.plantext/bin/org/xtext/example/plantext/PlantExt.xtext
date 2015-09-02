@@ -1,0 +1,60 @@
+grammar org.xtext.example.plantext.PlantExt with org.eclipse.xtext.common.Terminals
+
+generate plantext "http://www.xtext.org/example/plantext/PlantExt"
+
+Document:
+	 declaration = Declaration 
+	 (template += Template)+ 
+	 system = System 
+	 ;
+	
+Declaration: 
+	'Declarations' 
+		(text += TEXT)*
+	'EndDeclarations'
+;
+
+Template: 
+	'Template' 
+		name = ID (parameters = Parameter)? (declaration = Declaration)?
+		(state += State)+
+		(branchpoint += Branchpoint)*
+		(transition += Transition)+
+	'EndTemplate'
+;
+
+System:
+	'System' 
+		 (text += TEXT)*
+	'EndSystem'
+;
+
+Parameter: 
+	'Parameters'
+		(text += TEXT)*
+	'EndParameters'
+;
+
+State:
+	'ini'? ('com' | 'urg')? ':' id = ID (',' name = ID)? 
+	(text += TEXT)* (':' (exponentialRate += TEXT)*)? ';'
+;
+
+Branchpoint:
+	name = ID ';'
+;
+
+Transition:
+	outBoundState = ID '->' inboundState = ID (':'
+		('select' ':' (select += TEXT)+)? ','?
+		('guard' ':' (guard += TEXT)+)? ','?
+		('sync' ':' (sync += TEXT)+)? ','?
+		('assign' ':' (assign += TEXT)+)? ','?
+		('probability' ':' (probability += TEXT)+)? ','?
+		('comments' ':' (comments += TEXT)+)?
+	) ';'
+;
+
+TEXT: (ANY_OTHER | ID | INT | ';' | ',');
+
+
